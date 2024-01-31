@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  async-download-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: async-download-service
+    restart: always
