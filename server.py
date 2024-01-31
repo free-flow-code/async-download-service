@@ -74,7 +74,9 @@ async def archive(request):
     output_zip_file = 'archive.zip'
 
     response = web.StreamResponse()
+    response.enable_chunked_encoding()
     response.headers['Content-Type'] = 'text/html'
+    response.headers['Transfer-Encoding'] = 'chunked'
     response.headers['Content-Disposition'] = f'attachment; filename="{output_zip_file}"'
     await response.prepare(request)
 
