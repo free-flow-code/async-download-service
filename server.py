@@ -64,11 +64,14 @@ async def check_dir_exist(archive_hash):
     dirs = next(os.walk('test_photos'))[1]
     if archive_hash in dirs:
         return True
-    raise web.HTTPNotFound
+    raise web.HTTPNotFound()
 
 
 async def archive(request):
     archive_hash = request.match_info.get('archive_hash')
+    if not archive_hash:
+        raise web.HTTPNotFound(text='No archive hash')
+
     photos_directory = request.app['path']
     source_directory = f'{photos_directory}/{archive_hash}/'
     output_zip_file = 'archive.zip'
@@ -81,14 +84,14 @@ async def archive(request):
     await response.prepare(request)
 
     try:
-        await check_dir_exist(archive_hash)
+        if await check_dir_exist(archive_hash):
+            zip_archive = await create_archive(source_directory, request.app['delay'])
+            await response.write(zip_archive)
+
+            return response
+
     except web.HTTPNotFound:
         return web.HTTPNotFound(text='Архив не существует или был удален', content_type='text/html')
-
-    zip_archive = await create_archive(source_directory, request.app['delay'])
-    await response.write(zip_archive)
-
-    return response
 
 
 async def handle_index_page(request):
