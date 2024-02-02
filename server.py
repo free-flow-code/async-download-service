@@ -68,10 +68,7 @@ async def check_dir_exist(archive_hash):
 
 
 async def archive(request):
-    archive_hash = request.match_info.get('archive_hash')
-    if not archive_hash:
-        raise web.HTTPNotFound(text='No archive hash')
-
+    archive_hash = request.match_info['archive_hash']
     photos_directory = request.app['path']
     source_directory = f'{photos_directory}/{archive_hash}/'
     output_zip_file = 'archive.zip'
